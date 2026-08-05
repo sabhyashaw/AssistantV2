@@ -1,84 +1,46 @@
-# Jarvis AI — complete Flutter Android client
+# Jarvis AI — Local-First Voice Assistant (Flutter × FastAPI × Ollama)
 
-This folder is the phone/client half of the Jarvis client-server architecture.
+A native Android assistant backed by a self-hosted Python server — no cloud LLM API, no per-token billing, nothing leaving your network. The app talks to a FastAPI backend over LAN, which routes each message through a rule-based command layer and falls back to a locally-hosted **Ollama (Llama 3)** model for open-ended conversation. This is a client-server rewrite of an earlier single-machine assistant, split into a proper mobile client and a reusable backend service.
+
+## Architecture
+
+```
+┌─────────────────────────┐   HTTP/JSON over LAN   ┌──────────────────────────┐
+│  Android App (Flutter)   │ ─────────────────────▶ │  FastAPI Server (Python)  │
+│  Chat UI, STT/TTS, auth  │ ◀───────────────────── │  Router, memory, Ollama   │
+└─────────────────────────┘                        └──────────────────────────┘
+```
 
 ## Features
 
-- Dark UI matching the supplied reference
-- Real chat history
-- HTTP/JSON client for `POST /api/chat`
-- PC server settings stored on device
-- Bearer API token support
-- Connection test
-- Android speech-to-text
-- Optional Android text-to-speech for AI replies
-- Suggestion chips
-- Loading/error states
-- New-chat action
-- Android Internet and microphone permissions
-- Cleartext LAN HTTP enabled for development
+- **Client:** dark chat UI, on-device speech-to-text + text-to-speech, bearer-token auth, connection test, persistent chat history
+- **Server:** REST API (`/api/chat`, `/health`), rule-based intent router, persistent memory, weather/search/Wikipedia tools, local LLM fallback via Ollama
 
-## Open in Android Studio
+## Tech stack
 
-If this package was generated on a machine without the Flutter SDK, first install Flutter and run this once from the project directory:
+| Layer | Technology |
+|---|---|
+| Mobile | Flutter, Dart, `http`, `speech_to_text`, `flutter_tts` |
+| Backend | Python, FastAPI, Pydantic, Uvicorn |
+| LLM | Ollama (local Llama 3) |
+| Data | OpenWeatherMap, Wikipedia, DuckDuckGo, JSON memory store |
 
-    flutter create --platforms=android --org com.shaggy --project-name jarvis_ai .
+## Quick start
 
-This generates any SDK-specific Gradle wrapper/Android boilerplate without replacing your `lib/` source. If Android files are regenerated, verify that the provided `AndroidManifest.xml` still contains INTERNET, RECORD_AUDIO, and `usesCleartextTraffic="true"`.
+```bash
+# Backend
+cd pc_server
+pip install -r requirements.txt
+ollama pull llama3
+python -m uvicorn server:app --host 0.0.0.0 --port 8000
 
-Then:
+# Client
+flutter pub get
+flutter run
+```
 
-    flutter pub get
-    flutter run
+Point the app's Settings screen at your machine's LAN IP (e.g. `http://192.168.1.47:8000`), with a token matching `JARVIS_API_TOKEN` on the server.
 
-## Connect to your PC
+## Author
 
-Start the FastAPI server on the PC with:
-
-    python -m uvicorn server:app --host 0.0.0.0 --port 8000
-
-Find the PC's IPv4 address with `ipconfig`.
-
-In the app, open the menu -> Server settings and use:
-
-    http://YOUR_PC_IP:8000
-
-Example:
-
-    http://192.168.1.47:8000
-
-Do not use `localhost` from a physical phone.
-
-For the standard Android emulator, the host machine is normally:
-
-    http://10.0.2.2:8000
-
-The API token must match `JARVIS_API_TOKEN` on the Python server.
-
-## Expected server API
-
-POST `/api/chat`
-
-Request body:
-
-    {
-      "message": "Hello",
-      "history": [
-        {"role": "assistant", "content": "Hello. I am Jarvis."}
-      ]
-    }
-
-Response:
-
-    {
-      "reply": "Hello there!",
-      "source": "ollama"
-    }
-
-GET `/health` should return HTTP 200.
-
-## Important
-
-This app intentionally does not implement Windows OS operations. Those belong on the server side and were excluded from this build.
-
-Do not expose the development HTTP server directly to the public internet.
+Built by **Sabhya Shaw** — third-year B.Tech CSE (Data Science) student.
