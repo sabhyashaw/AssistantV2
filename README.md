@@ -1,6 +1,47 @@
 # Jarvis AI — Local-First Voice Assistant (Flutter × FastAPI × Ollama)
 
-A native Android assistant backed by a self-hosted Python server — no cloud LLM API, no per-token billing, nothing leaving your network. The app talks to a FastAPI backend over LAN, which routes each message through a rule-based command layer and falls back to a locally-hosted **Ollama (Llama 3)** model for open-ended conversation. This is a client-server rewrite of an earlier single-machine assistant, split into a proper mobile client and a reusable backend service.
+Assistant V2 is a personal AI assistant inspired by J.A.R.V.I.S. from the Marvel universe. The project focuses on building a privacy-first, locally hosted assistant capable of natural conversations, task automation, and system interaction across multiple platforms.
+
+Unlike traditional cloud-based assistants, Assistant V2 is designed to run primarily on local hardware, giving users greater control over their data while remaining highly extensible.
+
+Implementations
+
+Assistant V2 currently consists of two independent implementations.
+
+## Android Application
+
+The Android version is built using Flutter and communicates with a FastAPI backend through REST APIs. The backend routes requests to dedicated modules such as memory, weather, and web search while using Ollama for local large language model inference.
+Features
+
+- Flutter-based Android client
+- FastAPI backend
+- Local AI inference using Ollama
+- Persistent memory system
+- Context-aware conversations
+- Web search integration
+- Wikipedia integration
+- Weather information
+- Token-based API authentication
+- Modular request routing
+
+## Desktop Application (Windows & Linux)
+
+The desktop version is written in Python and is designed to function as a full desktop assistant. It supports both keyboard and voice interaction while providing direct access to operating system features.
+
+# Features
+
+- Voice recognition using Whisper
+- Offline text-to-speech
+- Text and voice interaction
+- Persistent memory
+- Web search and Wikipedia lookup
+- Weather information
+- Spotify playback control
+- Volume and brightness control
+- Application launcher
+- Desktop automation
+- System commands
+- Modular architecture for future extensions
 
 ## Architecture
 
@@ -43,4 +84,4 @@ Point the app's Settings screen at your machine's LAN IP (e.g. `http://192.168.1
 
 ## Author
 
-Built by **Sabhya Shaw** — third-year B.Tech CSE (Data Science) student.
+Built by **Sabhya Shaw** — final-year B.Tech CSE (Data Science) student.
